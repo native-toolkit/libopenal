@@ -1,122 +1,69 @@
 <xml>
-	
-	<files id="native-toolkit-openal">
-		
-		<section unless="android">
-			
-			<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/include/"/>
-			<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/include/"/>
-			<compilerflag value="-DAL_LIBTYPE_STATIC" />
-			
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alAuxEffectSlot.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alBuffer.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alEffect.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alError.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alExtension.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alFilter.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alListener.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alSource.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alState.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alThunk.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/ALc.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/ALu.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcConfig.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcDedicated.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcEcho.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcModulator.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcReverb.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcRing.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcThread.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/bs2b.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/helpers.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/panning.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/hrtf.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_c.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse.c"/>
-			
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/loopback.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/wave.c" />
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/null.c"/>
-			
-			<section if="linux">
-				
-				<compilerflag value="-I${INC_DIR}/libs/support/linux/" />
-				<compilerflag value="-DLIBTYPE=STATIC" />
-				<compilerflag value="-DREQUIRE_PULSEAUDIO=ON" />
-				<compilerflag value="-DREQUIRE_ALSA=ON" />
-				<compilerflag value="-msse" />
-				
-				<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/pulseaudio.c" />
-				<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/alsa.c" />
-				<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/oss.c" />
-				
-			</section>
 
-			<section if="mac">
-				
-				<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/coreaudio.c" />
-				
-			</section>
+    <files id="native-toolkit-openal">
 
-			<section if="windows">
-				
-				<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/winmm.c" />
-				<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/dsound.c" />
-				<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/mmdevapi.c" />
-				
-			</section>
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/include/"/>
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/include/"/>
+        <compilerflag value="-DAL_LIBTYPE_STATIC" />
 
-		</section>
-		
-		<section if="android">
-			
-			<compilerflag value="-I${INC_DIR}"/>
-			<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/android/"/>
-			<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/android/include"/>
-			<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/include/"/>
-			<compilerflag value="-DAL_LIBTYPE_STATIC" />
-			<compilerflag value="-DAL_ALEXT_PROTOTYPES" />
-			
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/ALc.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/ALu.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alcConfig.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alcEcho.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alcModulator.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alcReverb.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alcRing.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alcThread.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alcandroid.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/audiotrack.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/mixer.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/null.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/opensles.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/panning.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/bs2b.c"/>
-			<!--
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/alsa.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/oss.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/dsound.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/portaudio.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/pulseaudio.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/solaris.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/wave.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/Alc/winmm.c"/>
-			-->
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alAuxEffectSlot.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alBuffer.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alDatabuffer.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alEffect.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alError.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alExtension.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alFilter.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alListener.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alSource.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alState.c"/>
-			<file name="${NATIVE_TOOLKIT_PATH}/openal/android/OpenAL32/alThunk.c"/>
-			
-		</section>
-		
-	</files>
-	
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alAuxEffectSlot.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alBuffer.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alEffect.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alError.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alExtension.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alFilter.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alListener.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alSource.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alState.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alThunk.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/ALc.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/ALu.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcConfig.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcDedicated.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcEcho.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcModulator.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcReverb.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcRing.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcThread.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/bs2b.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/helpers.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/panning.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/hrtf.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_c.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse.c"/>
+
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/loopback.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/wave.c" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/null.c"/>
+
+        <section if="linux">
+
+            <compilerflag value="-DLIBTYPE=STATIC" />
+            <compilerflag value="-DREQUIRE_PULSEAUDIO=ON" />
+            <compilerflag value="-DREQUIRE_ALSA=ON" />
+            <compilerflag value="-msse" />
+
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/pulseaudio.c" />
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/alsa.c" />
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/oss.c" />
+
+        </section>
+
+        <section if="mac">
+
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/coreaudio.c" />
+
+        </section>
+
+        <section if="windows">
+
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/winmm.c" />
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/dsound.c" />
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/mmdevapi.c" />
+
+        </section>
+
+    </files>
+
 </xml>
