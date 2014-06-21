@@ -633,7 +633,7 @@ FILE *LogFile;
 #ifdef _DEBUG
 enum LogLevel LogLevel = LogTrace;
 #else
-enum LogLevel LogLevel = LogTrace;
+enum LogLevel LogLevel = LogError;
 #endif
 
 /* Flag to trap ALC device errors */
