@@ -61,8 +61,11 @@
 	#define HAVE_MALLOC_H
 	#define HAVE_GUIDDEF_H
 	#define HAVE_FLOAT_H
-	#define HAVE__CONTROLFP
-	#define HAVE___CONTROL87_2
+
+	#ifdef HXCPP_M64
+		#define HAVE__CONTROLFP
+		#define HAVE___CONTROL87_2
+	#endif 
 
 	#define strcasecmp _stricmp
 	#define strncasecmp _strnicmp
