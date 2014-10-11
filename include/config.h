@@ -62,10 +62,10 @@
 	#define HAVE_GUIDDEF_H
 	#define HAVE_FLOAT_H
 
-	#ifdef HXCPP_M64
+	#ifndef HXCPP_M64
 		#define HAVE__CONTROLFP
 		#define HAVE___CONTROL87_2
-	#endif 
+	#endif
 
 	#define strcasecmp _stricmp
 	#define strncasecmp _strnicmp
