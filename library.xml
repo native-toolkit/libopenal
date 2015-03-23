@@ -37,7 +37,7 @@
 
             <!-- linker flags -->
         <section unless="native_toolkit_openal_static">
-                
+
             <section if="windows">
                 <lib name="user32.lib" />
                 <lib name="winmm.lib" />
@@ -49,6 +49,10 @@
                 <vflag name="-framework" value="CoreAudio" />
                 <vflag name="-framework" value="AudioToolbox" />
                 <vflag name="-framework" value="AudioUnit" />
+            </section>
+
+            <section if="linux">
+                <lib name="-lpthread" />
             </section>
 
         </section>
