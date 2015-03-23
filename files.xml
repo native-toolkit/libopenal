@@ -4,7 +4,7 @@
 
         <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/include/"/>
         <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/include/"/>
-        <compilerflag value="-DAL_LIBTYPE_STATIC" />
+        <compilerflag value="-DAL_LIBTYPE_STATIC" if="native_toolkit_openal_static" />
 
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alAuxEffectSlot.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alBuffer.c"/>
