@@ -108,6 +108,9 @@
 	// Disable for now, may work with different HXCPP compile flags?
 
 	/* Define if we have ARM Neon CPU extensions */
+	#ifdef RASPBERRYPI
+	#define HAVE_NEON
+	#endif
 	/* #undef HAVE_NEON */
 
 	/* Define if we have the ALSA backend */
@@ -186,13 +189,17 @@
 	#define HAVE_XMMINTRIN_H
 
 	/* Define if we have arm_neon.h */
-	/* #undef HAVE_ARM_NEON_H */
+	#ifdef RASPBERRYPI
+	#define HAVE_ARM_NEON_H
+	#endif
 
 	/* Define if we have malloc.h */
 	#define HAVE_MALLOC_H
 
 	/* Define if we have cpuid.h */
+	#ifndef RASPBERRYPI
 	#define HAVE_CPUID_H
+	#endif
 
 	/* Define if we have guiddef.h */
 	/* #undef HAVE_GUIDDEF_H */

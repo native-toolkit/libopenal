@@ -31,7 +31,8 @@
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/hrtf.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_c.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse.c" unless="rpi"/>
+	<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_neon.c" if="rpi"/>
 
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/loopback.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/wave.c" />
@@ -42,7 +43,8 @@
             <compilerflag value="-DLIBTYPE=STATIC" />
             <compilerflag value="-DREQUIRE_PULSEAUDIO=ON" />
             <compilerflag value="-DREQUIRE_ALSA=ON" />
-            <compilerflag value="-msse" />
+            <compilerflag value="-msse" unless="rpi" />
+            <compilerflag value="-mfpu=neon" if="rpi" />
 
             <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/pulseaudio.c" />
             <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/alsa.c" />
