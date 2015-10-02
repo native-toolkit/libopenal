@@ -3,6 +3,7 @@
     <include name="${HXCPP}/build-tool/BuildCommon.xml"/>
     <set name="ios" value="1" if="iphone" />
     <set name="mac" value="1" if="macos" />
+    <set name="tvos" value="1" if="appletv" />
     <set name="native_toolkit_openal_static" value="1" if="static_link" />
 
         <!-- when building from native-toolkit path, it should be relative to allow for the lib name -->
@@ -15,7 +16,7 @@
     <set name="SLIBEXT" value=".a" unless="windows"/>
     <set name="SHLIBEXT" value=".dll" if="windows"/>
     <set name="SHLIBEXT" value=".so" unless="windows"/>
-    <set name="SHLIBEXT" value=".dylib" if="mac || ios"/>
+    <set name="SHLIBEXT" value=".dylib" if="mac || ios || tvos"/>
         <!-- :todo: will use a define to control -debug appendage -->
     <set name="DEBUGEXTRA" value="" />
     <set name="DEBUGEXTRA" value="" if="native_toolkit_openal_static"/>
@@ -33,7 +34,7 @@
         <ext value="${SLIBEXT}" if="native_toolkit_openal_static"/>
 
             <!-- add the files to build for the target -->
-        <files id="native-toolkit-openal" unless="ios || android"/>
+        <files id="native-toolkit-openal" unless="ios || android || tvos"/>
 
             <!-- linker flags -->
         <section unless="native_toolkit_openal_static">
