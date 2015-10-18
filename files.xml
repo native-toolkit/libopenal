@@ -2,9 +2,25 @@
 
     <files id="native-toolkit-openal">
 
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/Alc" />
         <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/include/"/>
-        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/include/"/>
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/Include/"/>
         <compilerflag value="-DAL_LIBTYPE_STATIC" if="native_toolkit_openal_static" />
+
+        <compilerflag value="-DAL_ALEXT_PROTOTYPES"/>
+        <compilerflag value="-D_FILE_OFFSET_BITS=64" />
+        <compilerflag value="-D_LARGEFILE_SOURCE -D_LARGE_FILES" />
+
+        <!--
+        <compilerflag value="-Dsnprintf=_snprintf" />
+        <compilerflag value="-Disfinite=_finite" />
+        <compilerflag value="-Disnan=_isnan" />
+        -->
+
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/common/atomic.c" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/common/rwlock.c" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/common/threads.c" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/common/uintmap.c" />
 
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alAuxEffectSlot.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alBuffer.c"/>
@@ -12,30 +28,54 @@
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alError.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alExtension.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alFilter.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alFontsound.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alListener.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alMidi.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alPreset.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alSoundfont.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alSource.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alState.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alThunk.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/sample_cvt.c"/>
+
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/ALc.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/ALu.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcConfig.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcDedicated.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcEcho.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcModulator.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcReverb.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcRing.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alcThread.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/bs2b.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/autowah.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/chorus.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/compressor.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/dedicated.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/distortion.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/echo.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/equalizer.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/flanger.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/modulator.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/null.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/effects/reverb.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/helpers.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/panning.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/hrtf.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/panning.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_c.c"/>
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse.c" unless="rpi"/>
-	<file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_neon.c" if="rpi"/>
 
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/loopback.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse.c" unless="rpi || android" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse2.c" unless="rpi || android" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse3.c" unless="rpi || android" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_sse41.c" unless="rpi || android" />
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer_neon.c" if="rpi" />
+
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/midi/base.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/midi/sf2load.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/midi/dummy.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/midi/fluidsynth.c"/>
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/midi/soft.c"/>
+
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/base.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/wave.c" />
+        <!-- Default backends, always available -->
+        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/loopback.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/null.c"/>
 
         <section if="linux">
@@ -64,6 +104,40 @@
             <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/dsound.c" />
             <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/mmdevapi.c" />
 
+            <compilerflag value="-D_WIN32 -D_WIN32_WINNT=0x0502" />
+            <!-- <compilerflag value="-DAL_NO_UID_DEFS" /> -->
+            <compilerflag value="-D_CRT_SECURE_NO_WARNINGS" />
+            <compilerflag value="-D_CRT_NONSTDC_NO_DEPRECATE" />
+            <compilerflag value="/wd4098" />
+            
+            <compilerflag value="-Drestrict=" />
+            <compilerflag value="-Dstrcasecmp=_stricmp" />
+            <compilerflag value="-Dstrncasecmp=_strnicmp" />
+            <!-- <compilerflag value="-Dinline=__inline" /> -->
+
+        </section>
+
+        <section unless="windows">
+
+            <compilerflag value="-D_GNU_SOURCE=1 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700" />
+
+            <!-- 
+            <compilerflag value="-Winline -Wall" />
+            <compilerflag value="-Wextra" />
+            <compilerflag value="-Werror" />
+            -->
+            <compilerflag value="-fPIC" />
+            <compilerflag value="-fvisibility=hidden" />
+            <compilerflag value="-pthread" />
+
+        </section>
+
+        <section if="android">
+
+            <compilerflag value="--std=c99" if="android"/>
+
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/opensl.c" />
+            
         </section>
 
     </files>

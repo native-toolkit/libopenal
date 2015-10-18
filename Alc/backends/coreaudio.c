@@ -13,8 +13,8 @@
  *
  * You should have received a copy of the GNU Library General Public
  *  License along with this library; if not, write to the
- *  Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- *  Boston, MA  02111-1307, USA.
+ *  Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  * Or go to http://www.gnu.org/copyleft/lgpl.html
  */
 
@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <alloca.h>
 
 #include "alMain.h"
 #include "alu.h"
@@ -180,7 +181,7 @@ static ALCenum ca_open_playback(ALCdevice *device, const ALCchar *deviceName)
         return ALC_INVALID_VALUE;
     }
 
-    device->DeviceName = strdup(deviceName);
+    al_string_copy_cstr(&device->DeviceName, deviceName);
     device->ExtraData = data;
     return ALC_NO_ERROR;
 }
@@ -382,6 +383,11 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     ca_data *data;
     OSStatus err;
 
+    if(!deviceName)
+        deviceName = ca_device;
+    else if(strcmp(deviceName, ca_device) != 0)
+        return ALC_INVALID_VALUE;
+
     desc.componentType = kAudioUnitType_Output;
     desc.componentSubType = kAudioUnitSubType_HALOutput;
     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
@@ -513,9 +519,10 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
 
         case DevFmtQuad:
         case DevFmtX51:
-        case DevFmtX51Side:
+        case DevFmtX51Rear:
         case DevFmtX61:
         case DevFmtX71:
+        case DevFmtBFormat3D:
             ERR("%s not supported\n", DevFmtChannelsString(device->FmtChans));
             goto error;
     }
@@ -576,6 +583,8 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     data->ring = CreateRingBuffer(data->frameSize, (device->UpdateSize * data->sampleRateRatio) * device->NumUpdates);
     if(data->ring == NULL)
         goto error;
+
+    al_string_copy_cstr(&device->DeviceName, deviceName);
 
     return ALC_NO_ERROR;
 
@@ -676,10 +685,7 @@ static const BackendFuncs ca_funcs = {
     ca_start_capture,
     ca_stop_capture,
     ca_capture_samples,
-    ca_available_samples,
-    ALCdevice_LockDefault,
-    ALCdevice_UnlockDefault,
-    ALCdevice_GetLatencyDefault
+    ca_available_samples
 };
 
 ALCboolean alc_ca_init(BackendFuncs *func_list)
