@@ -3,7 +3,7 @@
 #define ALC_API __attribute__((visibility("protected")))
 
 /* Define to the library version */
-#define ALSOFT_VERSION "1.16.0"
+#define ALSOFT_VERSION "1.17.2"
 
 #ifdef IN_IDE_PARSER
 /* KDevelop's parser doesn't recognize the C99-standard restrict keyword, but
@@ -31,9 +31,6 @@
 
 /* Define if we have ARM Neon CPU extensions */
 /* #undef HAVE_NEON */
-
-/* Define if we have FluidSynth support */
-/* #undef HAVE_FLUIDSYNTH */
 
 /* Define if we have the ALSA backend */
 /* #undef HAVE_ALSA */
@@ -83,8 +80,14 @@
 /* Define if we have the lrintf function */
 #define HAVE_LRINTF
 
+/* Define if we have the modff function */
+#define HAVE_MODFF
+
 /* Define if we have the strtof function */
 #define HAVE_STRTOF
+
+/* Define if we have the strnlen function */
+/* #undef HAVE_STRNLEN */
 
 /* Define if we have the __int64 type */
 /* #undef HAVE___INT64 */
@@ -143,9 +146,6 @@
 /* Define if we have dirent.h */
 #define HAVE_DIRENT_H
 
-/* Define if we have io.h */
-/* #undef HAVE_IO_H */
-
 /* Define if we have strings.h */
 #define HAVE_STRINGS_H
 
@@ -185,17 +185,14 @@
 /* Define if we have __control87_2() */
 /* #undef HAVE___CONTROL87_2 */
 
-/* Define if we have ftw() */
-/* #undef HAVE_FTW */
-
-/* Define if we have _wfindfirst() */
-/* #undef HAVE__WFINDFIRST */
-
 /* Define if we have pthread_setschedparam() */
 #define HAVE_PTHREAD_SETSCHEDPARAM
 
 /* Define if we have pthread_setname_np() */
-#define HAVE_PTHREAD_SETNAME_NP
+/* #undef HAVE_PTHREAD_SETNAME_NP */
+
+/* Define if pthread_setname_np() only accepts one parameter */
+/* #undef PTHREAD_SETNAME_NP_ONE_PARAM */
 
 /* Define if we have pthread_set_name_np() */
 /* #undef HAVE_PTHREAD_SET_NAME_NP */

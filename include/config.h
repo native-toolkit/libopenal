@@ -1,7 +1,7 @@
 #ifdef HX_MACOS
 
 	/* Define to the library version */
-	#define ALSOFT_VERSION "1.16.0"
+	#define ALSOFT_VERSION "1.17.2"
 
 	// Why does cmake need this?
 	#define SIZEOF_LONG sizeof(long)
@@ -49,6 +49,6 @@
 
 #elif defined (HX_ANDROID)
 
-#include "config-android-arm.h"
+#include "config-android.h"
 
 #endif
