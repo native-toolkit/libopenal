@@ -15,7 +15,7 @@
 #define ALIGN(x) __attribute__((aligned(x)))
 
 /* Define if we have the C11 aligned_alloc function */
-#define HAVE_ALIGNED_ALLOC
+/* #define HAVE_ALIGNED_ALLOC */
 
 /* Define if we have the posix_memalign function */
 #define HAVE_POSIX_MEMALIGN
