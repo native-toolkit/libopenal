@@ -33,7 +33,7 @@
 /* #undef HAVE_NEON */
 
 /* Define if we have the ALSA backend */
-/* #undef HAVE_ALSA */
+#define HAVE_ALSA
 
 /* Define if we have the OSS backend */
 #define HAVE_OSS
@@ -60,7 +60,7 @@
 /* #undef HAVE_PORTAUDIO */
 
 /* Define if we have the PulseAudio backend */
-/* #undef HAVE_PULSEAUDIO */
+#define HAVE_PULSEAUDIO
 
 /* Define if we have the JACK backend */
 /* #undef HAVE_JACK */
