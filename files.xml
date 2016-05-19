@@ -4,7 +4,7 @@
 
         <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/Alc" />
         <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/include/"/>
-        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/Include/"/>
+        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/include/"/>
         <compilerflag value="-DAL_LIBTYPE_STATIC" if="native_toolkit_openal_static" />
 
         <compilerflag value="-DAL_ALEXT_PROTOTYPES"/>
@@ -67,7 +67,7 @@
 
             <compilerflag value="-D_POSIX_C_SOURCE=200112L" />
             <compilerflag value="-D_XOPEN_SOURCE=500" />
-            <compilerflag value="-msse" unless="rpi" />
+            <compilerflag value="-msse4.1" unless="rpi" />
             <compilerflag value="-mfpu=neon" if="rpi" />
 
             <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/pulseaudio.c" />
@@ -111,12 +111,12 @@
             <compilerflag value="-fPIC" />
             <compilerflag value="-fvisibility=hidden" />
             <compilerflag value="-pthread" />
+            <compilerflag value="--std=c99" />
 
         </section>
 
         <section if="android">
 
-            <compilerflag value="--std=c99" if="android"/>
             <compilerflag value="-Wno-psabi" />
             <compilerflag value="-fsigned-char" />
 
