@@ -30,7 +30,9 @@
 #define HAVE_SSE4_1
 
 /* Define if we have ARM Neon CPU extensions */
-/* #undef HAVE_NEON */
+#ifdef RASPBERRYPI
+#define HAVE_NEON
+#endif
 
 /* Define if we have the ALSA backend */
 #define HAVE_ALSA
@@ -98,6 +100,7 @@
 /* Define to the size of a long long int type */
 #define SIZEOF_LONG_LONG 8
 
+#if __cplusplus > 199711L
 /* Define if we have C99 variable-length array support */
 #define HAVE_C99_VLA
 
@@ -112,6 +115,7 @@
 
 /* Define if we have C11 _Atomic support */
 #define HAVE_C11_ATOMIC
+#endif
 
 /* Define if we have GCC's destructor attribute */
 #define HAVE_GCC_DESTRUCTOR
@@ -138,7 +142,7 @@
 /* #undef HAVE_PTHREAD_NP_H */
 
 /* Define if we have alloca.h */
-/* #undef HAVE_ALLOCA_H */
+#define HAVE_ALLOCA_H
 
 /* Define if we have malloc.h */
 #define HAVE_MALLOC_H
