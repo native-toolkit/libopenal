@@ -123,7 +123,7 @@
 #define HAVE_STDINT_H
 
 /* Define if we have stdbool.h */
-#define HAVE_STDBOOL_H
+/* #undef HAVE_STDBOOL_H */
 
 /* Define if we have stdalign.h */
 /* #undef HAVE_STDALIGN_H */
