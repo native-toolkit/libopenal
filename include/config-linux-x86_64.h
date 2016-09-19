@@ -24,10 +24,12 @@
 /* #undef HAVE__ALIGNED_MALLOC */
 
 /* Define if we have SSE CPU extensions */
+#ifndef RASPBERRYPI
 #define HAVE_SSE
 #define HAVE_SSE2
 #define HAVE_SSE3
 #define HAVE_SSE4_1
+#endif
 
 /* Define if we have ARM Neon CPU extensions */
 #ifdef RASPBERRYPI
@@ -154,7 +156,9 @@
 #define HAVE_STRINGS_H
 
 /* Define if we have cpuid.h */
+#ifndef RASPBERRYPI
 #define HAVE_CPUID_H
+#endif
 
 /* Define if we have intrin.h */
 /* #undef HAVE_INTRIN_H */
