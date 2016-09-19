@@ -15,6 +15,15 @@
 #define inline __inline
 #endif
 
+#if defined(_MSC_VER) && _MSC_VER <1900
+	#define snprintf _snprintf
+#endif
+
+#if defined(_MSC_VER) && _MSC_VER <1900
+	#include <float.h>
+	#define isfinite _finite
+#endif
+
 /* Define any available alignment declaration */
 #define ALIGN(x) __declspec(align(x))
 
@@ -55,7 +64,7 @@
 #define HAVE_MMDEVAPI
 
 /* Define if we have the DSound backend */
-/* #undef HAVE_DSOUND */
+#define HAVE_DSOUND
 
 /* Define if we have the Windows Multimedia backend */
 #define HAVE_WINMM
@@ -82,13 +91,17 @@
 #define HAVE_STAT
 
 /* Define if we have the lrintf function */
+#if defined(_MSC_VER) && _MSC_VER >=1900
 #define HAVE_LRINTF
+#endif
 
 /* Define if we have the modff function */
 #define HAVE_MODFF
 
 /* Define if we have the strtof function */
+#if defined(_MSC_VER) && _MSC_VER >=1900
 #define HAVE_STRTOF
+#endif
 
 /* Define if we have the strnlen function */
 #define HAVE_STRNLEN
@@ -106,7 +119,9 @@
 /* #undef HAVE_C99_VLA */
 
 /* Define if we have C99 _Bool support */
-/* #undef HAVE_C99_BOOL */
+#if defined(_MSC_VER) && _MSC_VER >=1900
+	#define HAVE_C99_BOOL
+#endif
 
 /* Define if we have C11 _Static_assert support */
 /* #undef HAVE_C11_STATIC_ASSERT */
@@ -127,7 +142,9 @@
 #define HAVE_STDINT_H
 
 /* Define if we have stdbool.h */
-/* #undef HAVE_STDBOOL_H */
+#if defined(_MSC_VER) && _MSC_VER >=1900
+	#define HAVE_STDBOOL_H
+#endif
 
 /* Define if we have stdalign.h */
 /* #undef HAVE_STDALIGN_H */
@@ -175,7 +192,9 @@
 #define HAVE_FLOAT_H
 
 /* Define if we have fenv.h */
-/* #undef HAVE_FENV_H */
+#if defined(_MSC_VER) && _MSC_VER >=1900
+	#undef HAVE_FENV_H
+#endif
 
 /* Define if we have GCC's __get_cpuid() */
 /* #undef HAVE_GCC_GET_CPUID */
