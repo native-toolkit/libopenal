@@ -19,7 +19,7 @@
 	#define snprintf _snprintf
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER <1900
+#ifndef isfinite
 	#include <float.h>
 	#define isfinite _finite
 #endif
