@@ -19,6 +19,8 @@
 	#define snprintf _snprintf
 #endif
 
+#include <math.h>
+
 #ifndef isfinite
 	#include <float.h>
 	#define isfinite _finite
