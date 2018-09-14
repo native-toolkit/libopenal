@@ -2,17 +2,27 @@
 #define AL_API  __declspec(dllexport)
 #define ALC_API __declspec(dllexport)
 
-/* Define to the library version */
-#define ALSOFT_VERSION "1.17.2"
-
 #ifdef IN_IDE_PARSER
 /* KDevelop's parser doesn't recognize the C99-standard restrict keyword, but
  * recent versions (at least 4.5.1) do recognize GCC's __restrict. */
 #define restrict __restrict
 #endif
 
+#if _MSC_VER >= 1900
+#define HAVE_STRUCT_TIMESPEC
+#endif
+
 /* Define any available alignment declaration */
 #define ALIGN(x) __declspec(align(x))
+
+/* Define a built-in call indicating an aligned data pointer */
+#define ASSUME_ALIGNED(x, y) x
+
+/* Define if HRTF data is embedded in the library */
+#define ALSOFT_EMBED_HRTF_DATA
+
+/* Define if we have the sysconf function */
+/* #undef HAVE_SYSCONF */
 
 /* Define if we have the C11 aligned_alloc function */
 /* #undef HAVE_ALIGNED_ALLOC */
@@ -22,6 +32,12 @@
 
 /* Define if we have the _aligned_malloc function */
 #define HAVE__ALIGNED_MALLOC
+
+/* Define if we have the proc_pidpath function */
+/* #undef HAVE_PROC_PIDPATH */
+
+/* Define if we have the getopt function */
+/* #undef HAVE_GETOPT */
 
 /* Define if we have SSE CPU extensions */
 #define HAVE_SSE
@@ -47,8 +63,8 @@
 /* Define if we have the QSA backend */
 /* #undef HAVE_QSA */
 
-/* Define if we have the MMDevApi backend */
-#define HAVE_MMDEVAPI
+/* Define if we have the WASAPI backend */
+#define HAVE_WASAPI
 
 /* Define if we have the DSound backend */
 /* #undef HAVE_DSOUND */
@@ -74,6 +90,9 @@
 /* Define if we have the Wave Writer backend */
 #define HAVE_WAVE
 
+/* Define if we have the SDL2 backend */
+/* #undef HAVE_SDL2 */
+
 /* Define if we have the stat function */
 #define HAVE_STAT
 
@@ -82,6 +101,15 @@
 
 /* Define if we have the modff function */
 #define HAVE_MODFF
+
+/* Define if we have the log2f function */
+#define HAVE_LOG2F
+
+/* Define if we have the cbrtf function */
+#define HAVE_CBRTF
+
+/* Define if we have the copysignf function */
+#define HAVE_COPYSIGNF
 
 /* Define if we have the strtof function */
 #define HAVE_STRTOF
@@ -97,9 +125,6 @@
 
 /* Define to the size of a long long int type */
 #define SIZEOF_LONG_LONG 8
-
-/* Define if we have C99 variable-length array support */
-/* #undef HAVE_C99_VLA */
 
 /* Define if we have C99 _Bool support */
 #define HAVE_C99_BOOL
@@ -136,9 +161,6 @@
 
 /* Define if we have pthread_np.h */
 /* #undef HAVE_PTHREAD_NP_H */
-
-/* Define if we have alloca.h */
-/* #undef HAVE_ALLOCA_H */
 
 /* Define if we have malloc.h */
 #define HAVE_MALLOC_H
@@ -179,6 +201,12 @@
 /* Define if we have the __cpuid() intrinsic */
 #define HAVE_CPUID_INTRINSIC
 
+/* Define if we have the _BitScanForward64() intrinsic */
+/* #undef HAVE_BITSCANFORWARD64_INTRINSIC */
+
+/* Define if we have the _BitScanForward() intrinsic */
+#define HAVE_BITSCANFORWARD_INTRINSIC
+
 /* Define if we have _controlfp() */
 #define HAVE__CONTROLFP
 
@@ -193,6 +221,9 @@
 
 /* Define if pthread_setname_np() only accepts one parameter */
 /* #undef PTHREAD_SETNAME_NP_ONE_PARAM */
+
+/* Define if pthread_setname_np() accepts three parameters */
+/* #undef PTHREAD_SETNAME_NP_THREE_PARAMS */
 
 /* Define if we have pthread_set_name_np() */
 /* #undef HAVE_PTHREAD_SET_NAME_NP */

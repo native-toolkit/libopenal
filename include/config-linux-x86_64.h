@@ -2,9 +2,6 @@
 #define AL_API  __attribute__((visibility("protected")))
 #define ALC_API __attribute__((visibility("protected")))
 
-/* Define to the library version */
-#define ALSOFT_VERSION "1.17.2"
-
 #ifdef IN_IDE_PARSER
 /* KDevelop's parser doesn't recognize the C99-standard restrict keyword, but
  * recent versions (at least 4.5.1) do recognize GCC's __restrict. */

@@ -29,6 +29,7 @@
 
 #include "alMain.h"
 #include "alu.h"
+#include "ringbuffer.h"
 #include "threads.h"
 
 #include "backends/base.h"
@@ -45,8 +46,8 @@ static vector_al_string CaptureDevices;
 
 static void clear_devlist(vector_al_string *list)
 {
-    VECTOR_FOR_EACH(al_string, *list, al_string_deinit);
-    VECTOR_RESIZE(*list, 0);
+    VECTOR_FOR_EACH(al_string, *list, alstr_reset);
+    VECTOR_RESIZE(*list, 0, 0);
 }
 
 
@@ -58,7 +59,7 @@ static void ProbePlaybackDevices(void)
     clear_devlist(&PlaybackDevices);
 
     numdevs = waveOutGetNumDevs();
-    VECTOR_RESERVE(PlaybackDevices, numdevs);
+    VECTOR_RESIZE(PlaybackDevices, 0, numdevs);
     for(i = 0;i < numdevs;i++)
     {
         WAVEOUTCAPSW WaveCaps;
@@ -71,23 +72,23 @@ static void ProbePlaybackDevices(void)
             ALuint count = 0;
             while(1)
             {
-                al_string_copy_cstr(&dname, DEVNAME_HEAD);
-                al_string_append_wcstr(&dname, WaveCaps.szPname);
+                alstr_copy_cstr(&dname, DEVNAME_HEAD);
+                alstr_append_wcstr(&dname, WaveCaps.szPname);
                 if(count != 0)
                 {
                     char str[64];
                     snprintf(str, sizeof(str), " #%d", count+1);
-                    al_string_append_cstr(&dname, str);
+                    alstr_append_cstr(&dname, str);
                 }
                 count++;
 
-#define MATCH_ENTRY(i) (al_string_cmp(dname, *(i)) == 0)
+#define MATCH_ENTRY(i) (alstr_cmp(dname, *(i)) == 0)
                 VECTOR_FIND_IF(iter, const al_string, PlaybackDevices, MATCH_ENTRY);
-                if(iter == VECTOR_ITER_END(PlaybackDevices)) break;
+                if(iter == VECTOR_END(PlaybackDevices)) break;
 #undef MATCH_ENTRY
             }
 
-            TRACE("Got device \"%s\", ID %u\n", al_string_get_cstr(dname), i);
+            TRACE("Got device \"%s\", ID %u\n", alstr_get_cstr(dname), i);
         }
         VECTOR_PUSH_BACK(PlaybackDevices, dname);
     }
@@ -101,7 +102,7 @@ static void ProbeCaptureDevices(void)
     clear_devlist(&CaptureDevices);
 
     numdevs = waveInGetNumDevs();
-    VECTOR_RESERVE(CaptureDevices, numdevs);
+    VECTOR_RESIZE(CaptureDevices, 0, numdevs);
     for(i = 0;i < numdevs;i++)
     {
         WAVEINCAPSW WaveCaps;
@@ -114,23 +115,23 @@ static void ProbeCaptureDevices(void)
             ALuint count = 0;
             while(1)
             {
-                al_string_copy_cstr(&dname, DEVNAME_HEAD);
-                al_string_append_wcstr(&dname, WaveCaps.szPname);
+                alstr_copy_cstr(&dname, DEVNAME_HEAD);
+                alstr_append_wcstr(&dname, WaveCaps.szPname);
                 if(count != 0)
                 {
                     char str[64];
                     snprintf(str, sizeof(str), " #%d", count+1);
-                    al_string_append_cstr(&dname, str);
+                    alstr_append_cstr(&dname, str);
                 }
                 count++;
 
-#define MATCH_ENTRY(i) (al_string_cmp(dname, *(i)) == 0)
+#define MATCH_ENTRY(i) (alstr_cmp(dname, *(i)) == 0)
                 VECTOR_FIND_IF(iter, const al_string, CaptureDevices, MATCH_ENTRY);
-                if(iter == VECTOR_ITER_END(CaptureDevices)) break;
+                if(iter == VECTOR_END(CaptureDevices)) break;
 #undef MATCH_ENTRY
             }
 
-            TRACE("Got device \"%s\", ID %u\n", al_string_get_cstr(dname), i);
+            TRACE("Got device \"%s\", ID %u\n", alstr_get_cstr(dname), i);
         }
         VECTOR_PUSH_BACK(CaptureDevices, dname);
     }
@@ -147,7 +148,7 @@ typedef struct ALCwinmmPlayback {
 
     WAVEFORMATEX Format;
 
-    volatile ALboolean killNow;
+    ATOMIC(ALenum) killNow;
     althrd_t thread;
 } ALCwinmmPlayback;
 
@@ -158,13 +159,12 @@ static void CALLBACK ALCwinmmPlayback_waveOutProc(HWAVEOUT device, UINT msg, DWO
 static int ALCwinmmPlayback_mixerProc(void *arg);
 
 static ALCenum ALCwinmmPlayback_open(ALCwinmmPlayback *self, const ALCchar *name);
-static void ALCwinmmPlayback_close(ALCwinmmPlayback *self);
 static ALCboolean ALCwinmmPlayback_reset(ALCwinmmPlayback *self);
 static ALCboolean ALCwinmmPlayback_start(ALCwinmmPlayback *self);
 static void ALCwinmmPlayback_stop(ALCwinmmPlayback *self);
 static DECLARE_FORWARD2(ALCwinmmPlayback, ALCbackend, ALCenum, captureSamples, ALCvoid*, ALCuint)
 static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, ALCuint, availableSamples)
-static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, ALint64, getLatency)
+static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, ClockLatency, getClockLatency)
 static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, void, lock)
 static DECLARE_FORWARD(ALCwinmmPlayback, ALCbackend, void, unlock)
 DECLARE_DEFAULT_ALLOCATORS(ALCwinmmPlayback)
@@ -180,7 +180,7 @@ static void ALCwinmmPlayback_Construct(ALCwinmmPlayback *self, ALCdevice *device
     InitRef(&self->WaveBuffersCommitted, 0);
     self->OutHdl = NULL;
 
-    self->killNow = AL_TRUE;
+    ATOMIC_INIT(&self->killNow, AL_TRUE);
 }
 
 static void ALCwinmmPlayback_Destruct(ALCwinmmPlayback *self)
@@ -224,7 +224,7 @@ FORCE_ALIGN static int ALCwinmmPlayback_mixerProc(void *arg)
         if(msg.message != WOM_DONE)
             continue;
 
-        if(self->killNow)
+        if(ATOMIC_LOAD(&self->killNow, almemory_order_acquire))
         {
             if(ReadRef(&self->WaveBuffersCommitted) == 0)
                 break;
@@ -232,8 +232,10 @@ FORCE_ALIGN static int ALCwinmmPlayback_mixerProc(void *arg)
         }
 
         WaveHdr = ((WAVEHDR*)msg.lParam);
+        ALCwinmmPlayback_lock(self);
         aluMixData(device, WaveHdr->lpData, WaveHdr->dwBufferLength /
                                             self->Format.nBlockAlign);
+        ALCwinmmPlayback_unlock(self);
 
         // Send buffer back to play more data
         waveOutWrite(self->OutHdl, WaveHdr, sizeof(WAVEHDR));
@@ -255,14 +257,14 @@ static ALCenum ALCwinmmPlayback_open(ALCwinmmPlayback *self, const ALCchar *devi
         ProbePlaybackDevices();
 
     // Find the Device ID matching the deviceName if valid
-#define MATCH_DEVNAME(iter) (!al_string_empty(*(iter)) && \
-                             (!deviceName || al_string_cmp_cstr(*(iter), deviceName) == 0))
+#define MATCH_DEVNAME(iter) (!alstr_empty(*(iter)) && \
+                             (!deviceName || alstr_cmp_cstr(*(iter), deviceName) == 0))
     VECTOR_FIND_IF(iter, const al_string, PlaybackDevices, MATCH_DEVNAME);
-    if(iter == VECTOR_ITER_END(PlaybackDevices))
+    if(iter == VECTOR_END(PlaybackDevices))
         return ALC_INVALID_VALUE;
 #undef MATCH_DEVNAME
 
-    DeviceID = (UINT)(iter - VECTOR_ITER_BEGIN(PlaybackDevices));
+    DeviceID = (UINT)(iter - VECTOR_BEGIN(PlaybackDevices));
 
 retry_open:
     memset(&self->Format, 0, sizeof(WAVEFORMATEX));
@@ -298,7 +300,7 @@ retry_open:
         goto failure;
     }
 
-    al_string_copy(&device->DeviceName, VECTOR_ELEM(PlaybackDevices, DeviceID));
+    alstr_copy(&device->DeviceName, VECTOR_ELEM(PlaybackDevices, DeviceID));
     return ALC_NO_ERROR;
 
 failure:
@@ -308,9 +310,6 @@ failure:
 
     return ALC_INVALID_VALUE;
 }
-
-static void ALCwinmmPlayback_close(ALCwinmmPlayback* UNUSED(self))
-{ }
 
 static ALCboolean ALCwinmmPlayback_reset(ALCwinmmPlayback *self)
 {
@@ -372,7 +371,7 @@ static ALCboolean ALCwinmmPlayback_start(ALCwinmmPlayback *self)
     ALint BufferSize;
     ALuint i;
 
-    self->killNow = AL_FALSE;
+    ATOMIC_STORE(&self->killNow, AL_FALSE, almemory_order_release);
     if(althrd_create(&self->thread, ALCwinmmPlayback_mixerProc, self) != althrd_success)
         return ALC_FALSE;
 
@@ -380,7 +379,7 @@ static ALCboolean ALCwinmmPlayback_start(ALCwinmmPlayback *self)
 
     // Create 4 Buffers
     BufferSize  = device->UpdateSize*device->NumUpdates / 4;
-    BufferSize *= FrameSizeFromDevFmt(device->FmtChans, device->FmtType);
+    BufferSize *= FrameSizeFromDevFmt(device->FmtChans, device->FmtType, device->AmbiOrder);
 
     BufferData = calloc(4, BufferSize);
     for(i = 0;i < 4;i++)
@@ -403,11 +402,8 @@ static void ALCwinmmPlayback_stop(ALCwinmmPlayback *self)
     void *buffer = NULL;
     int i;
 
-    if(self->killNow)
+    if(ATOMIC_EXCHANGE(&self->killNow, AL_TRUE, almemory_order_acq_rel))
         return;
-
-    // Set flag to stop processing headers
-    self->killNow = AL_TRUE;
     althrd_join(self->thread, &i);
 
     // Release the wave buffers
@@ -430,11 +426,11 @@ typedef struct ALCwinmmCapture {
 
     HWAVEIN InHdl;
 
-    RingBuffer *Ring;
+    ll_ringbuffer_t *Ring;
 
     WAVEFORMATEX Format;
 
-    volatile ALboolean killNow;
+    ATOMIC(ALenum) killNow;
     althrd_t thread;
 } ALCwinmmCapture;
 
@@ -445,13 +441,12 @@ static void CALLBACK ALCwinmmCapture_waveInProc(HWAVEIN device, UINT msg, DWORD_
 static int ALCwinmmCapture_captureProc(void *arg);
 
 static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name);
-static void ALCwinmmCapture_close(ALCwinmmCapture *self);
 static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, ALCboolean, reset)
 static ALCboolean ALCwinmmCapture_start(ALCwinmmCapture *self);
 static void ALCwinmmCapture_stop(ALCwinmmCapture *self);
 static ALCenum ALCwinmmCapture_captureSamples(ALCwinmmCapture *self, ALCvoid *buffer, ALCuint samples);
 static ALCuint ALCwinmmCapture_availableSamples(ALCwinmmCapture *self);
-static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, ALint64, getLatency)
+static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, ClockLatency, getClockLatency)
 static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, void, lock)
 static DECLARE_FORWARD(ALCwinmmCapture, ALCbackend, void, unlock)
 DECLARE_DEFAULT_ALLOCATORS(ALCwinmmCapture)
@@ -467,11 +462,38 @@ static void ALCwinmmCapture_Construct(ALCwinmmCapture *self, ALCdevice *device)
     InitRef(&self->WaveBuffersCommitted, 0);
     self->InHdl = NULL;
 
-    self->killNow = AL_TRUE;
+    ATOMIC_INIT(&self->killNow, AL_TRUE);
 }
 
 static void ALCwinmmCapture_Destruct(ALCwinmmCapture *self)
 {
+    void *buffer = NULL;
+    int i;
+
+    /* Tell the processing thread to quit and wait for it to do so. */
+    if(!ATOMIC_EXCHANGE(&self->killNow, AL_TRUE, almemory_order_acq_rel))
+    {
+        PostThreadMessage(self->thread, WM_QUIT, 0, 0);
+
+        althrd_join(self->thread, &i);
+
+        /* Make sure capture is stopped and all pending buffers are flushed. */
+        waveInReset(self->InHdl);
+
+        // Release the wave buffers
+        for(i = 0;i < 4;i++)
+        {
+            waveInUnprepareHeader(self->InHdl, &self->WaveBuffer[i], sizeof(WAVEHDR));
+            if(i == 0) buffer = self->WaveBuffer[i].lpData;
+            self->WaveBuffer[i].lpData = NULL;
+        }
+        free(buffer);
+    }
+
+    ll_ringbuffer_free(self->Ring);
+    self->Ring = NULL;
+
+    // Close the Wave device
     if(self->InHdl)
         waveInClose(self->InHdl);
     self->InHdl = 0;
@@ -510,12 +532,13 @@ static int ALCwinmmCapture_captureProc(void *arg)
             continue;
         /* Don't wait for other buffers to finish before quitting. We're
          * closing so we don't need them. */
-        if(self->killNow)
+        if(ATOMIC_LOAD(&self->killNow, almemory_order_acquire))
             break;
 
         WaveHdr = ((WAVEHDR*)msg.lParam);
-        WriteRingBuffer(self->Ring, (ALubyte*)WaveHdr->lpData,
-                        WaveHdr->dwBytesRecorded/self->Format.nBlockAlign);
+        ll_ringbuffer_write(self->Ring, WaveHdr->lpData,
+            WaveHdr->dwBytesRecorded / self->Format.nBlockAlign
+        );
 
         // Send buffer back to capture more data
         waveInAddBuffer(self->InHdl, WaveHdr, sizeof(WAVEHDR));
@@ -541,13 +564,13 @@ static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name)
         ProbeCaptureDevices();
 
     // Find the Device ID matching the deviceName if valid
-#define MATCH_DEVNAME(iter) (!al_string_empty(*(iter)) &&  (!name || al_string_cmp_cstr(*iter, name) == 0))
+#define MATCH_DEVNAME(iter) (!alstr_empty(*(iter)) && (!name || alstr_cmp_cstr(*iter, name) == 0))
     VECTOR_FIND_IF(iter, const al_string, CaptureDevices, MATCH_DEVNAME);
-    if(iter == VECTOR_ITER_END(CaptureDevices))
+    if(iter == VECTOR_END(CaptureDevices))
         return ALC_INVALID_VALUE;
 #undef MATCH_DEVNAME
 
-    DeviceID = (UINT)(iter - VECTOR_ITER_BEGIN(CaptureDevices));
+    DeviceID = (UINT)(iter - VECTOR_BEGIN(CaptureDevices));
 
     switch(device->FmtChans)
     {
@@ -560,7 +583,7 @@ static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name)
         case DevFmtX51Rear:
         case DevFmtX61:
         case DevFmtX71:
-        case DevFmtBFormat3D:
+        case DevFmtAmbi3D:
             return ALC_INVALID_ENUM;
     }
 
@@ -581,7 +604,7 @@ static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name)
     memset(&self->Format, 0, sizeof(WAVEFORMATEX));
     self->Format.wFormatTag = ((device->FmtType == DevFmtFloat) ?
                                WAVE_FORMAT_IEEE_FLOAT : WAVE_FORMAT_PCM);
-    self->Format.nChannels = ChannelsFromDevFmt(device->FmtChans);
+    self->Format.nChannels = ChannelsFromDevFmt(device->FmtChans, device->AmbiOrder);
     self->Format.wBitsPerSample = BytesFromDevFmt(device->FmtType) * 8;
     self->Format.nBlockAlign = self->Format.wBitsPerSample *
                                self->Format.nChannels / 8;
@@ -603,7 +626,7 @@ static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name)
     if(CapturedDataSize < (self->Format.nSamplesPerSec / 10))
         CapturedDataSize = self->Format.nSamplesPerSec / 10;
 
-    self->Ring = CreateRingBuffer(self->Format.nBlockAlign, CapturedDataSize);
+    self->Ring = ll_ringbuffer_create(CapturedDataSize, self->Format.nBlockAlign, false);
     if(!self->Ring) goto failure;
 
     InitRef(&self->WaveBuffersCommitted, 0);
@@ -629,11 +652,11 @@ static ALCenum ALCwinmmCapture_open(ALCwinmmCapture *self, const ALCchar *name)
         IncrementRef(&self->WaveBuffersCommitted);
     }
 
-    self->killNow = AL_FALSE;
+    ATOMIC_STORE(&self->killNow, AL_FALSE, almemory_order_release);
     if(althrd_create(&self->thread, ALCwinmmCapture_captureProc, self) != althrd_success)
         goto failure;
 
-    al_string_copy(&device->DeviceName, VECTOR_ELEM(CaptureDevices, DeviceID));
+    alstr_copy(&device->DeviceName, VECTOR_ELEM(CaptureDevices, DeviceID));
     return ALC_NO_ERROR;
 
 failure:
@@ -644,8 +667,7 @@ failure:
         free(BufferData);
     }
 
-    if(self->Ring)
-        DestroyRingBuffer(self->Ring);
+    ll_ringbuffer_free(self->Ring);
     self->Ring = NULL;
 
     if(self->InHdl)
@@ -653,37 +675,6 @@ failure:
     self->InHdl = NULL;
 
     return ALC_INVALID_VALUE;
-}
-
-static void ALCwinmmCapture_close(ALCwinmmCapture *self)
-{
-    void *buffer = NULL;
-    int i;
-
-    /* Tell the processing thread to quit and wait for it to do so. */
-    self->killNow = AL_TRUE;
-    PostThreadMessage(self->thread, WM_QUIT, 0, 0);
-
-    althrd_join(self->thread, &i);
-
-    /* Make sure capture is stopped and all pending buffers are flushed. */
-    waveInReset(self->InHdl);
-
-    // Release the wave buffers
-    for(i = 0;i < 4;i++)
-    {
-        waveInUnprepareHeader(self->InHdl, &self->WaveBuffer[i], sizeof(WAVEHDR));
-        if(i == 0) buffer = self->WaveBuffer[i].lpData;
-        self->WaveBuffer[i].lpData = NULL;
-    }
-    free(buffer);
-
-    DestroyRingBuffer(self->Ring);
-    self->Ring = NULL;
-
-    // Close the Wave device
-    waveInClose(self->InHdl);
-    self->InHdl = NULL;
 }
 
 static ALCboolean ALCwinmmCapture_start(ALCwinmmCapture *self)
@@ -699,25 +690,25 @@ static void ALCwinmmCapture_stop(ALCwinmmCapture *self)
 
 static ALCenum ALCwinmmCapture_captureSamples(ALCwinmmCapture *self, ALCvoid *buffer, ALCuint samples)
 {
-    ReadRingBuffer(self->Ring, buffer, samples);
+    ll_ringbuffer_read(self->Ring, buffer, samples);
     return ALC_NO_ERROR;
 }
 
 static ALCuint ALCwinmmCapture_availableSamples(ALCwinmmCapture *self)
 {
-    return RingBufferSize(self->Ring);
+    return (ALCuint)ll_ringbuffer_read_space(self->Ring);
 }
 
 
 static inline void AppendAllDevicesList2(const al_string *name)
 {
-    if(!al_string_empty(*name))
-        AppendAllDevicesList(al_string_get_cstr(*name));
+    if(!alstr_empty(*name))
+        AppendAllDevicesList(alstr_get_cstr(*name));
 }
 static inline void AppendCaptureDeviceList2(const al_string *name)
 {
-    if(!al_string_empty(*name))
-        AppendCaptureDeviceList(al_string_get_cstr(*name));
+    if(!alstr_empty(*name))
+        AppendCaptureDeviceList(alstr_get_cstr(*name));
 }
 
 typedef struct ALCwinmmBackendFactory {
