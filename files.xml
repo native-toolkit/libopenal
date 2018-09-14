@@ -13,16 +13,6 @@
         <compilerflag value="-D_LARGEFILE_SOURCE" />
         <compilerflag value="-D_LARGE_FILES" />
 
-        <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/" if="NATIVE_TOOLKIT_HAVE_SDL" />
-		<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/default/" if="NATIVE_TOOLKIT_HAVE_SDL" unless="windows || mac || linux || rpi"/>
-		<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/linux/" if="NATIVE_TOOLKIT_HAVE_SDL linux" unless="rpi"/>
-		<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/windows/" if="NATIVE_TOOLKIT_HAVE_SDL windows"/>
-		<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/mac/" if="NATIVE_TOOLKIT_HAVE_SDL mac"/>
-		<compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/rpi/" if="NATIVE_TOOLKIT_HAVE_SDL rpi"/>
-
-        <compilerflag value="-DHAVE_SDL2" if="NATIVE_TOOLKIT_HAVE_SDL" />
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/sdl2.c" if="NATIVE_TOOLKIT_HAVE_SDL" />
-
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/base.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/loopback.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/null.c"/>
@@ -79,6 +69,20 @@
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/alState.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/event.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/OpenAL32/sample_cvt.c"/>
+
+        <section if="NATIVE_TOOLKIT_HAVE_SDL">
+
+            <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/" />
+            <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/default/" unless="windows || mac || linux || rpi"/>
+            <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/linux/" if="linux" unless="rpi"/>
+            <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/windows/" if="windows"/>
+            <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/mac/" if="mac"/>
+            <compilerflag value="-I${NATIVE_TOOLKIT_PATH}/sdl/include/configs/rpi/" if="rpi"/>
+
+            <compilerflag value="-DHAVE_SDL2" />
+            <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/backends/sdl2.c" />
+
+        </section>
 
         <section if="linux">
 

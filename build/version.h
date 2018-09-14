@@ -1,5 +1,5 @@
 /* Define to the library version */
-#define ALSOFT_VERSION "0.19.0"
+#define ALSOFT_VERSION "1.19.0"
 
 /* Define the branch being built */
 #define ALSOFT_GIT_BRANCH "master"
