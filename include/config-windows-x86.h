@@ -120,13 +120,13 @@
 #define HAVE_MODFF
 
 /* Define if we have the log2f function */
-#define HAVE_LOG2F
+/* #undef HAVE_LOG2F */
 
 /* Define if we have the cbrtf function */
-#define HAVE_CBRTF
+/* #undef HAVE_CBRTF */
 
 /* Define if we have the copysignf function */
-#define HAVE_COPYSIGNF
+/* #undef HAVE_COPYSIGNF */
 
 /* Define if we have the strtof function */
 #if defined(_MSC_VER) && _MSC_VER >=1900
