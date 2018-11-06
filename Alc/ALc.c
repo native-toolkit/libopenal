@@ -1266,7 +1266,7 @@ static void alc_cleanup(void)
             num++;
             dev = ATOMIC_LOAD(&dev->next, almemory_order_relaxed);
         } while(dev != NULL);
-        ERR("%u device%s not closed\n", num, (num>1)?"s":"");
+        //ERR("%u device%s not closed\n", num, (num>1)?"s":"");
     }
 }
 
