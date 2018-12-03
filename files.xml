@@ -36,7 +36,7 @@
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer/mixer_sse.c" unless="rpi || android" />
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer/mixer_sse2.c" unless="rpi || android" />
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer/mixer_sse3.c" unless="rpi || android" />
-        <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer/mixer_sse41.c" unless="rpi || android" />
+        <!-- <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer/mixer_sse41.c" unless="rpi || android" /> -->
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/mixer/mixer_neon.c" if="rpi" />
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/ALc.c"/>
         <file name="${NATIVE_TOOLKIT_PATH}/openal/Alc/alconfig.c"/>
