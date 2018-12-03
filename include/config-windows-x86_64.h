@@ -42,7 +42,7 @@
 /* Define if we have SSE CPU extensions */
 #define HAVE_SSE
 #define HAVE_SSE2
-#define HAVE_SSE3
+/* #undef HAVE_SSE3 */
 /* #undef HAVE_SSE4_1 */
 
 /* Define if we have ARM Neon CPU extensions */
