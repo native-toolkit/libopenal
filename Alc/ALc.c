@@ -2237,6 +2237,14 @@ static ALCenum UpdateDeviceParams(ALCdevice *device, const ALCint *attrList)
             device->DitherDepth = powf(2.0f, (ALfloat)(depth-1));
         }
     }
+
+#ifndef log2f
+#ifndef M_LOG2_E
+#define M_LOG2_E 0.693147180559945309417
+#endif
+#define log2f(x) (log (x) / (float) M_LOG2_E)
+#endif
+
     if(!(device->DitherDepth > 0.0f))
         TRACE("Dithering disabled\n");
     else
