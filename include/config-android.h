@@ -105,7 +105,7 @@
 #define HAVE_MODFF
 
 /* Define if we have the log2f function */
-#if __NDK_MAJOR__ > 18
+#if defined(HXCPP_ARM64) || __NDK_MAJOR__ > 18
 #define HAVE_LOG2F
 #else
 /* undef HAVE_LOG2F */
