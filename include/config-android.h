@@ -2,6 +2,12 @@
 #define AL_API  __attribute__((visibility("protected")))
 #define ALC_API __attribute__((visibility("protected")))
 
+#if defined __has_include
+#  if __has_include (<android/ndk-version.h>)
+#    include <android/ndk-version.h>
+#  endif
+#endif
+
 #ifdef IN_IDE_PARSER
 /* KDevelop's parser doesn't recognize the C99-standard restrict keyword, but
  * recent versions (at least 4.5.1) do recognize GCC's __restrict. */
@@ -99,7 +105,7 @@
 #define HAVE_MODFF
 
 /* Define if we have the log2f function */
-#if defined(HXCPP_ARM64) || defined(HXCPP_CPP11) // Not supporting in Android NDK platform < 18, define when increasing platform
+#if defined(HXCPP_ARM64) || __NDK_MAJOR__ > 18
 #define HAVE_LOG2F
 #else
 /* undef HAVE_LOG2F */
